@@ -3,7 +3,6 @@ resource "google_sql_database_instance" "postgres" {
   name             = var.cloud_sql_instance_id
   database_version = "POSTGRES_15"
   region           = var.region
-
   settings {
     tier = "db-custom-2-7680"
 

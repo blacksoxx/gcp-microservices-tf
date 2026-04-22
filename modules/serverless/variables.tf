@@ -26,5 +26,5 @@ variable "scheduler_job_name" {
 variable "frontend_image" {
   description = "Container image for Online Boutique frontend"
   type        = string
-  default     = "gcr.io/google-samples/microservices-demo/frontend:v0.10.2"
+  default     = "us-docker.pkg.dev/google-samples/microservices-demo/frontend:v0.10.2"
 }

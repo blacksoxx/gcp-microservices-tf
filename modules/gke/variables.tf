@@ -39,7 +39,13 @@ variable "disk_zone" {
 }
 
 variable "node_count" {
-  description = "Initial node count for the node pool"
+  description = "Initial node count per zone for the regional node pool"
   type        = number
-  default     = 3
+  default     = 1
+}
+
+variable "node_machine_type" {
+  description = "Machine type for GKE nodes"
+  type        = string
+  default     = "e2-standard-2"
 }

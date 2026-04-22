@@ -17,7 +17,7 @@ variable "vpc_name" {
 variable "gke_subnet_cidr" {
   description = "Primary CIDR for the GKE subnet"
   type        = string
-  default     = "10.10.0.0/20"
+  default     = "10.60.0.0/20"
 }
 
 variable "gke_pods_cidr" {
@@ -35,11 +35,17 @@ variable "gke_services_cidr" {
 variable "serverless_subnet_cidr" {
   description = "Primary CIDR for serverless connector subnet"
   type        = string
-  default     = "10.40.0.0/24"
+  default     = "10.70.0.0/28"
 }
 
 variable "vpc_connector_cidr" {
   description = "IP CIDR range for Serverless VPC Access connector"
   type        = string
   default     = "10.40.1.0/28"
+}
+
+variable "serverless_connector_max_instances" {
+  description = "Maximum number of instances for the Serverless VPC Access connector"
+  type        = number
+  default     = 3
 }

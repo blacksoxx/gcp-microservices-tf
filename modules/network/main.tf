@@ -69,8 +69,13 @@ resource "google_vpc_access_connector" "serverless_connector" {
   project       = var.project_id
   name          = "serverless-vpc-connector"
   region        = var.region
-  network       = google_compute_network.prod_vpc.name
-  ip_cidr_range = var.vpc_connector_cidr
+  min_instances = 2
+  max_instances = var.serverless_connector_max_instances
+
+  subnet {
+    name       = google_compute_subnetwork.serverless_subnet.name
+    project_id = var.project_id
+  }
 
   depends_on = [google_compute_subnetwork.serverless_subnet]
 }
