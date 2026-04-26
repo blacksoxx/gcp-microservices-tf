@@ -14,7 +14,7 @@ Modular Terraform project for Google Cloud Platform (GCP) to host the **Online B
 	- Serverless VPC Access connector for Cloud Run
 - **Compute**:
 	- Regional **GKE Standard** cluster (private nodes, Workload Identity)
-	- Cloud Run frontend with **all egress through VPC connector**
+	- Optional Cloud Run frontend with **all egress through VPC connector**
 - **Data**:
 	- Cloud SQL PostgreSQL (private IP only)
 	- Memorystore Redis Standard HA (private access)
@@ -64,6 +64,39 @@ Optional:
 
 ```hcl
 disk_zone = "us-central1-b"
+deploy_cloud_run_frontend = false
+frontend_image = "gcr.io/google-samples/microservices-demo/frontend:v0.10.1"
+allow_public_frontend = true
+deploy_boutique_manifests = true
+boutique_namespace = "boutique"
+boutique_manifest_url = "https://raw.githubusercontent.com/GoogleCloudPlatform/microservices-demo/main/release/kubernetes-manifests.yaml"
+```
+
+## Setup: Deploy Boutique Manifests via Terraform
+
+You can deploy the Online Boutique Kubernetes manifests directly from Terraform.
+
+Prerequisites on the machine running Terraform:
+
+- `gcloud`
+- `kubectl`
+- `gke-gcloud-auth-plugin`
+
+Why: Terraform uses a `local-exec` step to run `kubectl apply` after GKE is created.
+
+Enable in `terraform.tfvars`:
+
+```hcl
+deploy_cloud_run_frontend = false
+deploy_boutique_manifests = true
+boutique_namespace = "boutique"
+```
+
+Then run:
+
+```bash
+terraform init
+terraform apply -var="project_id=your-gcp-project-id"
 ```
 
 ## Usage
@@ -96,6 +129,8 @@ Useful flags:
 ## Outputs
 
 - `gke_cluster_endpoint`
-- `cloud_run_url`
+- `cloud_run_url` (null when `deploy_cloud_run_frontend = false`)
+- `boutique_frontend_external_ip`
+- `boutique_frontend_url`
 - `database_private_ip`
 

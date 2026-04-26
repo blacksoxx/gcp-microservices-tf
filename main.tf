@@ -2,6 +2,7 @@ locals {
   required_services = [
     "compute.googleapis.com",
     "container.googleapis.com",
+    "artifactregistry.googleapis.com",
     "servicenetworking.googleapis.com",
     "vpcaccess.googleapis.com",
     "run.googleapis.com",
@@ -41,6 +42,30 @@ module "gke" {
   depends_on = [module.network]
 }
 
+resource "terraform_data" "boutique_manifests" {
+  count = var.deploy_boutique_manifests ? 1 : 0
+
+  triggers_replace = [
+    var.project_id,
+    var.region,
+    var.cluster_name,
+    var.boutique_namespace,
+    var.boutique_manifest_url
+  ]
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      set -e
+      gcloud container clusters get-credentials ${var.cluster_name} --region ${var.region} --project ${var.project_id}
+      kubectl get namespace ${var.boutique_namespace} >/dev/null 2>&1 || kubectl create namespace ${var.boutique_namespace}
+      kubectl apply -n ${var.boutique_namespace} -f ${var.boutique_manifest_url}
+    EOT
+    interpreter = ["/bin/bash", "-c"]
+  }
+
+  depends_on = [module.gke]
+}
+
 resource "kubernetes_storage_class_v1" "stateful_sc" {
   metadata {
     name = "boutique-stateful-sc"
@@ -70,12 +95,15 @@ module "database" {
 }
 
 module "serverless" {
+  count              = var.deploy_cloud_run_frontend ? 1 : 0
   source             = "./modules/serverless"
   project_id         = var.project_id
   region             = var.region
   vpc_connector_id   = module.network.serverless_vpc_connector_id
   cloud_run_service  = "boutique-frontend"
   scheduler_job_name = "frontend-warmup"
+  frontend_image     = var.frontend_image
+  allow_public_frontend = var.allow_public_frontend
 
   depends_on = [module.network]
 }

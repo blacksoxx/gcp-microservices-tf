@@ -26,5 +26,11 @@ variable "scheduler_job_name" {
 variable "frontend_image" {
   description = "Container image for Online Boutique frontend"
   type        = string
-  default     = "us-docker.pkg.dev/google-samples/microservices-demo/frontend:v0.10.2"
+  default     = "gcr.io/google-samples/microservices-demo/frontend:v0.10.1"
+}
+
+variable "allow_public_frontend" {
+  description = "Whether to allow unauthenticated public access to Cloud Run frontend"
+  type        = bool
+  default     = true
 }
